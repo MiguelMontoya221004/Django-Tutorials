@@ -20,10 +20,14 @@
                 <div class="navbar-nav ms-auto">
                     <a class="nav-link active" href="{% url 'home' %}">Home</a>
                     <a class="nav-link active" href="{% url 'about' %}">About</a>
+                    <a class="nav-link active" href="{% url 'index' %}">Products</a>
                 </div>
             </div>
         </div>
     </nav>
+    <header class="py-3 text-center text-white" style="background-color: #1abc9c;">
+        <h1 class="fw-light">{% block header_title %}{% endblock %}</h1>
+    </header>
     <div class="container my-4">
         {% block content %}
         {% endblock %}
