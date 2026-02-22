@@ -66,16 +66,32 @@ class ProductShowView(View):
 
         return render(request, self.template_name, viewData)
 
-
-class ProductForm(forms.Form):
+class ProductForm(forms.ModelForm):
     name = forms.CharField(required=True)
     price = forms.FloatField(required=True)
+    
+    class Meta:
+        model = Product
+        fields = ['name', 'price']
 
-    def clean_price(self):
+    def clean_price(self):  
         price = self.cleaned_data.get('price')
         if price is not None and price <= 0:
-            raise forms.ValidationError('Price must be greater than zero')
+            raise ValidationError('Price must be greater than zero.')
         return price
+
+        
+
+
+
+class ProductCreatedView(TemplateView):
+    template_name = 'products/created.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Product created"
+        context["message"] = "Product created successfully"
+        return context
 
 
 class ProductCreateView(View):
@@ -91,23 +107,14 @@ class ProductCreateView(View):
     def post(self, request):
         form = ProductForm(request.POST)
         if form.is_valid():
+            form.save()
+            # Show a success page after creating the product
             return redirect('product_created')
         else:
             viewData = {}
             viewData["title"] = "Create product"
             viewData["form"] = form
             return render(request, self.template_name, viewData)
-
-
-class ProductCreatedView(TemplateView):
-    template_name = 'products/created.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Product Created'
-        context['message'] = 'Product created'
-        return context
-    
 
 
 class ProductListView(ListView):
